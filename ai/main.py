@@ -21,8 +21,7 @@ from openai import OpenAI
 from ai.agent import respond
 from ai.mic import record_until_enter
 from ai.transcribe import transcribe
-from hand import AmazingHand
-from ports import find_servo_port
+from hand import AmazingHand, find_servo_port
 
 
 def parse_args() -> argparse.Namespace:
@@ -57,7 +56,10 @@ def main() -> int:
         port = args.port or find_servo_port()
     except RuntimeError as exc:
         print(f"エラー: {exc}", file=sys.stderr)
-        print("  uv run list_ports.py で利用可能なポートを確認してください。", file=sys.stderr)
+        print(
+            "  uv run python -m demo.list_ports で利用可能なポートを確認してください。",
+            file=sys.stderr,
+        )
         return 1
 
     client = OpenAI(api_key=api_key)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """利用可能なシリアルポートを一覧表示する。"""
 
-from ports import list_ports
+from hand import list_ports
 
 
 def main() -> None:

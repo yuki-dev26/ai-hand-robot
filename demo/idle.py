@@ -10,8 +10,7 @@ import sys
 import time
 from collections.abc import Callable
 
-from hand import FINGER_IDS, AmazingHand
-from ports import find_servo_port
+from hand import FINGER_IDS, AmazingHand, find_servo_port
 
 OPEN_ANGLE = (-35.0, 35.0)
 FINGERS = tuple(FINGER_IDS)

@@ -5,9 +5,9 @@
 Ctrl+C で停止し、サーボをフリーにする。
 
 使い方:
-  python demo.py                  # ポート自動検出
-  python demo.py --port /dev/tty.usbmodemXXXX
-  python demo.py --once           # 1サイクルだけ実行
+  uv run python -m demo.demo
+  uv run python -m demo.demo --port /dev/tty.usbmodemXXXX
+  uv run python -m demo.demo --once
 """
 
 from __future__ import annotations
@@ -16,8 +16,7 @@ import argparse
 import sys
 import time
 
-from hand import AmazingHand
-from ports import find_servo_port
+from hand import AmazingHand, find_servo_port
 
 
 def parse_args() -> argparse.Namespace:
@@ -67,7 +66,10 @@ def main() -> int:
         port = args.port or find_servo_port()
     except RuntimeError as exc:
         print(f"エラー: {exc}", file=sys.stderr)
-        print("  python list_ports.py で利用可能なポートを確認してください。", file=sys.stderr)
+        print(
+            "  uv run python -m demo.list_ports で利用可能なポートを確認してください。",
+            file=sys.stderr,
+        )
         return 1
 
     print(f"ポート: {port}")

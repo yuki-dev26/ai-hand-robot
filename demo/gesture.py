@@ -2,9 +2,9 @@
 """対話的にジェスチャーを指定して動かす CLI。
 
 使い方:
-  python gesture.py
-  python gesture.py --port /dev/tty.usbmodemXXXX open
-  python gesture.py close
+  uv run python -m demo.gesture
+  uv run python -m demo.gesture --port /dev/tty.usbmodemXXXX open
+  uv run python -m demo.gesture close
 """
 
 from __future__ import annotations
@@ -13,8 +13,7 @@ import argparse
 import sys
 import time
 
-from hand import AmazingHand
-from ports import find_servo_port
+from hand import AmazingHand, find_servo_port
 
 GESTURES = {
     "open": ("開く", "open"),

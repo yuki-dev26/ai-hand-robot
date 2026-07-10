@@ -4,10 +4,10 @@
 組み立て後の動作確認や、MiddlePos キャリブレーションに使う。
 
 使い方:
-  python calibrate.py                     # 全指を順番に開閉
-  python calibrate.py --finger index      # 人差し指だけ
-  python calibrate.py --middle            # 全指を中立位置へ固定
-  python calibrate.py --port /dev/tty.usbmodemXXXX
+  uv run python -m demo.calibrate
+  uv run python -m demo.calibrate --finger index
+  uv run python -m demo.calibrate --middle
+  uv run python -m demo.calibrate --port /dev/tty.usbmodemXXXX
 """
 
 from __future__ import annotations
@@ -16,8 +16,7 @@ import argparse
 import sys
 import time
 
-from hand import FINGER_IDS, AmazingHand
-from ports import find_servo_port
+from hand import FINGER_IDS, AmazingHand, find_servo_port
 
 
 def parse_args() -> argparse.Namespace:
