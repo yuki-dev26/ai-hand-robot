@@ -54,6 +54,25 @@ uv run gesture.py              # 対話モード
 
 利用可能なジェスチャー: `open` / `close` / `middle` / `spread` / `point` / `victory`
 
+### 音声 AI モード
+
+PC マイクで話した内容を文字起こしし、AI が返答とジェスチャーを決めて手を動かします。
+
+1. プロジェクト直下に `.env` を作成し、OpenAI API キーを設定:
+
+```bash
+OPENAI_API_KEY=sk-...
+```
+
+2. 起動:
+
+```bash
+uv run python -m ai.main
+uv run python -m ai.main --port /dev/tty.usbmodemXXXX
+```
+
+各ターンで Enter → 話す → Enter。Ctrl+C で停止します。
+
 ### 自動アイドリング
 
 指の小さな動きや波打ちをランダムな間隔で繰り返します。可動域と速度を抑え、
@@ -101,6 +120,7 @@ uv run calibrate.py --middle         # 中立位置に固定
 | `calibrate.py` | 指テスト・中立位置合わせ |
 | `list_ports.py` | ポート一覧 |
 | `ports.py` | ポート自動検出 |
+| `ai/` | 音声認識 + GPT で手を動かす |
 
 ## トラブルシュート
 
