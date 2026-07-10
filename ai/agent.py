@@ -72,15 +72,28 @@ GESTURE_SETTLE_SEC = {
     "victory": 1.4,
 }
 
+# settle 時間の基準速度 (この速度で GESTURE_SETTLE_SEC を計測した想定)
+SETTLE_REF_SPEED = 6
+# サーボ音がマイクに入らないよう、動作後に少し待つ
+POST_MOTION_QUIET_SEC = 0.5
+
+
+def gesture_settle_sec(hand: AmazingHand, name: str) -> float:
+    """速度に応じたジェスチャー完了待ち秒数を返す。遅いほど長く待つ。"""
+    speed = hand.close_speed if name == "close" else hand.max_speed
+    speed = max(int(speed), 1)
+    return GESTURE_SETTLE_SEC[name] * (SETTLE_REF_SPEED / speed)
+
 
 def apply_gesture(hand: AmazingHand, name: str) -> None:
     """ジェスチャー名に対応する AmazingHand メソッドを実行し、動き終わるまで待つ。"""
     if name not in GESTURES:
         raise ValueError(f"不明なジェスチャー: {name}")
     label = GESTURE_LABELS[name]
+    settle = gesture_settle_sec(hand, name)
     print(f"  → {label} ({name})")
     getattr(hand, name)()
-    time.sleep(GESTURE_SETTLE_SEC[name])
+    time.sleep(settle)
 
 
 def respond(client: OpenAI, hand: AmazingHand, user_text: str) -> str:
@@ -103,6 +116,7 @@ def respond(client: OpenAI, hand: AmazingHand, user_text: str) -> str:
     message = response.choices[0].message
     reply = (message.content or "").strip()
 
+    moved = False
     if message.tool_calls:
         for tool_call in message.tool_calls:
             if tool_call.function.name != "do_gesture":
@@ -112,5 +126,9 @@ def respond(client: OpenAI, hand: AmazingHand, user_text: str) -> str:
             if not gesture_name:
                 continue
             apply_gesture(hand, gesture_name)
+            moved = True
+
+    if moved:
+        time.sleep(POST_MOTION_QUIET_SEC)
 
     return reply
