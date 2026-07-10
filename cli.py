@@ -14,6 +14,7 @@ import importlib
 import sys
 
 COMMANDS: dict[str, tuple[str, str]] = {
+    "check": ("demo.check", "接続・サーボ応答を確認する"),
     "demo": ("demo.demo", "ジェスチャーデモを繰り返す"),
     "gesture": ("demo.gesture", "ジェスチャーを指定 / 対話実行"),
     "idle": ("demo.idle", "安全な小動作でアイドリング"),
@@ -32,6 +33,8 @@ def usage() -> None:
         print(f"  {name:<{width}}  {desc}")
     print()
     print("例:")
+    print("  hand check")
+    print("  hand check --move")
     print("  hand demo --once")
     print("  hand gesture open")
     print("  hand ai --port /dev/tty.usbmodemXXXX")

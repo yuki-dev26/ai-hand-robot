@@ -26,7 +26,19 @@ uv sync
 1. ハンドのサーボバスを USB シリアルアダプタに接続
 2. アダプタを PC の USB に接続
 3. **外部 5V 電源をハンド側に接続** (必須)
-4. ポート確認:
+4. 動作確認:
+
+```bash
+uv run hand check
+```
+
+サーボ ID 1〜8 がすべて `OK` なら通信できています。指が実際に動くかも見る場合:
+
+```bash
+uv run hand check --move
+```
+
+ポートだけ見たいとき:
 
 ```bash
 uv run hand ports
@@ -52,12 +64,21 @@ uv run hand --help
 
 | コマンド | 内容 |
 |---|---|
-| `hand demo` | ジェスチャーデモ (おすすめの最初の一歩) |
+| `hand check` | 接続・サーボ応答の確認 (まずこれ) |
+| `hand demo` | ジェスチャーデモ |
 | `hand gesture` | ジェスチャー指定 / 対話 |
 | `hand idle` | 自動アイドリング |
 | `hand calibrate` | 指テスト / 中立位置合わせ |
 | `hand ports` | シリアルポート一覧 |
 | `hand ai` | 音声指示で手を動かす |
+
+### 接続確認
+
+```bash
+uv run hand check                 # サーボ 1〜8 の応答確認
+uv run hand check --move          # 小さく開閉して実動作も確認
+uv run hand check --port /dev/cu.usbmodemXXXX
+```
 
 ### デモ
 
@@ -110,7 +131,9 @@ uv run hand ai --port /dev/tty.usbmodemXXXX
 
 ## トラブルシュート
 
-- **動かない**: 外部 5V 電源が入っているか確認
+- **まず確認**: `uv run hand check` でサーボ応答を見る
+- **全部 NG**: 外部 5V 電源・サーボバス配線・Type-C 接続を確認
+- **動かない**: 外部 5V 電源が入っているか確認 (赤 LED 点灯だけでは不十分なことが多い)
 - **ポートエラー**: `uv run hand ports` でデバイス名を確認し `--port` で指定
 - **一部の指だけ動かない**: サーボ ID が 1〜8 に設定されているか確認 (Feetech 公式ツールで設定)
 - **変な方向に動く**: `middle_pos` のキャリブレーションを調整 ([`hand/README.md`](hand/README.md) 参照)
