@@ -63,18 +63,31 @@ TOOLS: list[dict[str, Any]] = [
 ]
 
 
+GESTURE_SETTLE_SEC = {
+    "open": 1.0,
+    "close": 1.6,
+    "middle": 1.0,
+    "spread": 1.2,
+    "point": 1.2,
+    "victory": 1.4,
+}
+
+
 def apply_gesture(hand: AmazingHand, name: str) -> None:
-    """ジェスチャー名に対応する AmazingHand メソッドを実行する。"""
+    """ジェスチャー名に対応する AmazingHand メソッドを実行し、動き終わるまで待つ。"""
     if name not in GESTURES:
         raise ValueError(f"不明なジェスチャー: {name}")
     label = GESTURE_LABELS[name]
     print(f"  → {label} ({name})")
     getattr(hand, name)()
-    time.sleep(0.8)
+    time.sleep(GESTURE_SETTLE_SEC[name])
 
 
 def respond(client: OpenAI, hand: AmazingHand, user_text: str) -> str:
-    """ユーザー発話に対して返答し、必要ならジェスチャーを実行する。"""
+    """ユーザー発話に対して返答し、必要ならジェスチャーを実行する。
+
+    すべての動作が終わってから返す (呼び出し側は再録音してよい)。
+    """
     messages: list[dict[str, Any]] = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_text},

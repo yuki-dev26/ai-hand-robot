@@ -106,7 +106,7 @@ uv run hand ai
 uv run hand ai --port /dev/tty.usbmodemXXXX
 ```
 
-各ターン: Enter → 話す → Enter。Ctrl+C で停止します。
+各ターン: 発話 3秒以上 → 無音 1秒で文字起こし → 動作完了後に再録音。Ctrl+C で停止します。
 
 ## トラブルシュート
 

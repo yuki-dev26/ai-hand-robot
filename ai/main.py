@@ -1,11 +1,12 @@
 """音声指示で Amazing Hand を動かす CLI。
 
-PC マイクで録音 → gpt-4o-mini-transcribe で文字起こし →
+Silero VAD で発話を切り出し → gpt-4o-mini-transcribe で文字起こし →
 GPT が返答とジェスチャーを決めて手を動かす。
+動作完了後に再び聞き取りを開始する。
 
 使い方:
-  uv run python -m ai.main
-  uv run python -m ai.main --port /dev/tty.usbmodemXXXX
+  uv run hand ai
+  uv run hand ai --port /dev/tty.usbmodemXXXX
 """
 
 from __future__ import annotations
@@ -19,7 +20,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 from ai.agent import respond
-from ai.mic import record_until_enter
+from ai.mic import get_vad_model, record_utterance
 from ai.transcribe import transcribe
 from hand import AmazingHand, find_servo_port
 
@@ -57,12 +58,13 @@ def main() -> int:
     except RuntimeError as exc:
         print(f"エラー: {exc}", file=sys.stderr)
         print(
-            "  uv run python -m demo.list_ports で利用可能なポートを確認してください。",
+            "  uv run hand ports で利用可能なポートを確認してください。",
             file=sys.stderr,
         )
         return 1
 
     client = OpenAI(api_key=api_key)
+    get_vad_model()
 
     print(f"ポート: {port}")
     print("Amazing Hand (左手) を初期化中...")
@@ -71,13 +73,13 @@ def main() -> int:
     time.sleep(0.3)
 
     print("音声モード開始 (Ctrl+C で停止)")
-    print("各ターン: Enter で録音開始 → 話して → Enter で停止")
+    print("発話 3秒以上 → 無音 1秒で文字起こし → 動作完了後に再録音")
 
     try:
         while True:
             print()
             try:
-                wav_bytes = record_until_enter()
+                wav_bytes = record_utterance()
             except RuntimeError as exc:
                 print(f"録音エラー: {exc}")
                 continue
@@ -101,6 +103,9 @@ def main() -> int:
                 print(f"AI: {reply}")
             else:
                 print("AI: (動作のみ)")
+
+            # 動作完了後に再録音へ戻る
+            print("動作完了。再録音します。")
     except KeyboardInterrupt:
         print("\n停止します...")
     finally:
