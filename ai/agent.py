@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import time
+from pathlib import Path
 from typing import Any
 
 from openai import OpenAI
@@ -23,30 +24,26 @@ GESTURE_LABELS = {
     "victory": "ピース",
 }
 
-SYSTEM_PROMPT = """\
-あなたはロボットハンド Amazing Hand の操縦アシスタントです。
-ユーザーの発話に短く日本語で返答し、必要なら do_gesture ツールで手を動かしてください。
+PROMPT_PATH = Path(__file__).with_name("system_prompt.md")
 
-利用可能なジェスチャー:
-- open: 手を開く
-- close: 手を握る
-- middle: 中立位置
-- spread: 指を広げる
-- point: 人差し指で指差し
-- victory: ピースサイン
 
-ルール:
-- 返答は1〜2文の短い日本語にする
-- 動作が不要ならツールは呼ばない
-- 複数のジェスチャーが必要な場合は順に複数回呼ぶ
-"""
+def load_system_prompt() -> str:
+    """ai/system_prompt.md を読み込む。"""
+    text = PROMPT_PATH.read_text(encoding="utf-8").strip()
+    if not text:
+        raise RuntimeError(f"システムプロンプトが空です: {PROMPT_PATH}")
+    return text
+
 
 TOOLS: list[dict[str, Any]] = [
     {
         "type": "function",
         "function": {
             "name": "do_gesture",
-            "description": "ロボットハンドで指定したジェスチャーを実行する",
+            "description": (
+                "ロボットハンドで指定したジェスチャーを実行する。"
+                "動作指示のときは必ずこのツールを呼ぶこと。"
+            ),
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -102,7 +99,7 @@ def respond(client: OpenAI, hand: AmazingHand, user_text: str) -> str:
     すべての動作が終わってから返す (呼び出し側は再録音してよい)。
     """
     messages: list[dict[str, Any]] = [
-        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "system", "content": load_system_prompt()},
         {"role": "user", "content": user_text},
     ]
 

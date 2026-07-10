@@ -26,6 +26,12 @@ uv run hand ai
 | `mic.py` | Silero VAD による自動発話切り出し |
 | `transcribe.py` | 音声文字起こし |
 | `agent.py` | GPT + `do_gesture` tool calling |
+| `system_prompt.md` | AI のシステムプロンプト (編集可) |
+
+## システムプロンプト
+
+AI の振る舞い・ジェスチャー対応は [`system_prompt.md`](system_prompt.md) で指定します。
+コードを触らずにこのファイルを編集すれば、返答の口調や tool の呼び方を調整できます。
 
 ## 利用可能なジェスチャー
 
