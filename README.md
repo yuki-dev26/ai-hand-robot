@@ -54,6 +54,20 @@ uv run gesture.py              # 対話モード
 
 利用可能なジェスチャー: `open` / `close` / `middle` / `spread` / `point` / `victory`
 
+### 自動アイドリング
+
+指の小さな動きや波打ちをランダムな間隔で繰り返します。可動域と速度を抑え、
+10分ごとに2分間トルクを切ってサーボを休ませます。
+
+```bash
+uv run idle.py                         # Ctrl+C まで継続
+uv run idle.py --duration 30m          # 30分で終了
+uv run idle.py --seed 1                # 動作順を再現可能にする
+uv run idle.py --port /dev/tty.usbmodemXXXX
+```
+
+停止時や通信エラー時は、可能であれば手を開いてからサーボをフリーにします。
+
 ### 指テスト / キャリブレーション
 
 ```bash
@@ -83,6 +97,7 @@ uv run calibrate.py --middle         # 中立位置に固定
 | `hand.py` | 制御クラス |
 | `demo.py` | ジェスチャーデモ |
 | `gesture.py` | 単発 / 対話 CLI |
+| `idle.py` | 安全な小動作を繰り返す自動アイドリング |
 | `calibrate.py` | 指テスト・中立位置合わせ |
 | `list_ports.py` | ポート一覧 |
 | `ports.py` | ポート自動検出 |
