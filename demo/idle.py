@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import random
 import re
+import signal
 import sys
 import time
 from collections.abc import Callable
@@ -127,6 +128,15 @@ def sleep_with_deadline(seconds: float, deadline: float | None) -> None:
     time.sleep(seconds)
 
 
+def install_signal_handlers() -> None:
+    """プロセスマネージャーからの停止要求を安全停止へ変換する。"""
+
+    def request_stop(_signum: int, _frame: object) -> None:
+        raise KeyboardInterrupt
+
+    signal.signal(signal.SIGTERM, request_stop)
+
+
 def run_idle(hand: AmazingHand, args: argparse.Namespace) -> None:
     rng = random.Random(args.seed)
     started_at = time.monotonic()
@@ -166,6 +176,7 @@ def main() -> int:
 
     print(f"ポート: {port}")
     hand = AmazingHand(port, max_speed=args.speed, close_speed=args.speed)
+    install_signal_handlers()
 
     try:
         hand.enable_torque(True)

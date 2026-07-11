@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import sys
-
 import serial.tools.list_ports
 
 
@@ -51,11 +49,9 @@ def find_servo_port() -> str:
     scored.sort(key=lambda x: x[0], reverse=True)
     best_score, best_device = scored[0]
     if best_score <= 0:
-        # 候補が曖昧な場合は一覧を出して最初のポートを使う
         devices = ", ".join(d for _, d in ports)
-        print(
-            f"警告: USB シリアルらしきポートが特定できません。候補: {devices}",
-            file=sys.stderr,
+        raise RuntimeError(
+            "USB シリアルらしきポートが特定できません。"
+            f"候補: {devices}。--port で明示してください。"
         )
-        print(f"  → {best_device} を使用します (--port で指定可能)", file=sys.stderr)
     return best_device
